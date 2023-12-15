@@ -1,0 +1,45 @@
+﻿<<link rel="stylesheet" type="text/css" href="~/css/jquery-ui.css">
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script type="text/javascript" charset="utf8" src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="~/lib/jquery/dist/jquery-ui-1.12.1.min.js"></script>
+<script type="text/javascript" charset="utf8" src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" charset="utf8" src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script type="text/javascript" charset="utf8" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Delete UPC Maintenance</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+
+
+    <div class="container body-content">
+        @RenderBody()
+        @*<hr />
+            <footer>
+                <p>&copy; 2022 - ReserveUPC</p>
+            </footer>*@
+    </div>
+
+
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

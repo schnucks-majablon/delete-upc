@@ -1,0 +1,1185 @@
+﻿
+@{
+    ViewData["Title"] = "DeleteUPC";
+}
+
+<html>
+<body>
+
+
+
+    <link rel="stylesheet" type="text/css" href="~/css/StyleSheet1.css">
+    @*<link rel="stylesheet" type="dist/themes/default/style.min.css" />*@
+
+    <link rel="stylesheet" href="~/lib/jstree/themes/default/style.min.css">
+    <script type="text/javascript" charset="utf8" src="~/lib/jstree/jstree.min.js"></script>
+
+
+    <script type="text/javascript">
+
+        var TempString = "";
+
+        window.onload = function () {
+            LoadLabels();
+        }
+
+
+
+        function LoadLabels() {
+
+            document.getElementById("CLUSTERNBR").style.display = "none"; 
+
+            Refresh("N");
+
+            var TempHeading = "";
+            var TempHeading2 = "";
+
+            TempHeading = TempHeading + "Div" + "&nbsp;".repeat(2);
+            TempHeading = TempHeading + "Item Number" + "&nbsp;".repeat(3);
+            TempHeading = TempHeading + "UPC" + "&nbsp;".repeat(11);
+            TempHeading = TempHeading + "Product Description" + "&nbsp;".repeat(10);
+            TempHeading = TempHeading + "Section" + "&nbsp;".repeat(5);
+            TempHeading = TempHeading + "Old UPC Status" + "&nbsp;".repeat(5);
+            TempHeading = TempHeading + "Update ID" + "&nbsp;".repeat(5);
+            TempHeading = TempHeading + "Update Date";
+
+
+            TempHeading2 = TempHeading2 + "Div" + "&nbsp;".repeat(2);
+            TempHeading2 = TempHeading2 + "Item Number" + "&nbsp;".repeat(2);
+            TempHeading2 = TempHeading2 + "UPC" + "&nbsp;".repeat(11);
+            TempHeading2 = TempHeading2 + "Product Description" + "&nbsp;".repeat(6);
+
+
+            document.getElementById("GRIDHEADING").innerHTML = TempHeading;
+            document.getElementById("GRIDHEADING2").innerHTML = TempHeading2;
+
+        }
+
+        function Refresh(MessageClear) {
+
+            document.getElementById("DELETEREQUEST").checked = true;
+            document.getElementById("DELETEREVIEW").checked = false;
+            document.getElementById("DELETEREVERSAL").checked = false;
+
+            document.getElementById("UPCLISTLABEL").innerHTML = "Delete Request UPC List";
+          
+
+
+                       
+            if (MessageClear == "Y") {
+                document.getElementById("ERRORMESSAGE").value = "";
+
+            }
+
+            var objSelect = document.getElementById("SELECTIONUPCLIST");
+            while (objSelect.options.length > 0) objSelect.remove(0);
+
+
+            var objSelect = document.getElementById("CURRENTUPCLIST");
+            while (objSelect.options.length > 0) objSelect.remove(0);
+
+            DeleteRequest();
+        }
+
+        function DeleteRequest() {
+
+            document.getElementById("DELETEREQUEST").checked = true;
+            document.getElementById("DELETEREVIEW").checked = false;
+            document.getElementById("DELETEREVERSAL").checked = false;
+
+            document.getElementById("UPCLISTLABEL").innerHTML = "Delete Request UPC List";
+
+          
+            // ajax Routine
+            var myData = {};
+            var token = $('input[name="__RequestVerificationToken"]', $('#DeleteUPC')).val();
+            var dataWithAntiforgeryToken = $.extend(myData, { '__RequestVerificationToken': token });
+
+           
+
+            $.ajax({
+                url: "DeleteUPC/DUPC/DisplayPendingRequests",
+                type: "GET",
+                data: dataWithAntiforgeryToken,
+                //  data: myData;
+                dataType: "json",
+                // contentType: "application/json; charset=utf-8",
+                async: false,
+                success: function (response) {
+
+                    var objSelect = document.getElementById("CURRENTUPCLIST");
+                    while (objSelect.options.length > 0) objSelect.remove(0);
+
+                    var Results = response.AppDataSet;
+
+
+                    var TempITEM_DIV = "";
+                    var TempITEM_NBR = "";
+                    var TempUPC = "";
+                    var TempUPCID = "";
+                    var TempPRODUCT_DESCRIPTION = "";
+                    var TempSECTION = "";
+                    var TempUPDATEID = "";
+                    var TempOLDUPCSTATUS = "";
+                    var TempUPDATEDATE = "";
+
+                    if (response.Message == "Success") {
+
+                        //  alert("loop")
+
+                        for (var listIndex = 0; listIndex < Results.Table.length; listIndex++) {
+
+
+
+                            var record = Results.Table[listIndex];
+
+                            //   alert("loop 1")
+
+                            TempITEM_DIV = record.ITEMDIV.trim();
+                            TempITEM_NBR = record.ITEMNBR.trim();
+                            TempUPC = record.UPC.trim();
+                            TempUPCID = record.UPCID.trim();
+                            TempPRODUCT_DESCRIPTION = record.PRODUCTDESCRIPTION.trim();
+                            TempSECTION = record.SECTION.trim();
+                            TempUPDATEID = record.UPDATEID.trim();
+                            TempOLDUPCSTATUS = record.OLDUPCSTATUS.trim();
+                          //  TempUPDATEDATE = Convert.ToDateTime(record.UPDATEDATE.trim()).ToString("MM/dd/yyy");
+                            TempUPDATEDATE =  record.UPDATEDATE.trim();
+
+                            TempUPDATEDATE = TempUPDATEDATE.substring(0,10)
+
+                           
+                            opt = document.createElement("option");
+                            opt.value = TempUPCID;
+
+                            // alert(TempOLDUPCSTATUS.length)
+
+                            //alert("TempITEM_NBR " + TempITEM_NBR.length);
+                            //alert("TempUPC " + TempUPC.length);
+
+                            //alert("TempPRODUCT_DESCRIPTION " + TempPRODUCT_DESCRIPTION.length);
+                            //alert("TempSECTION " + TempSECTION.length);
+                            //alert("TempUPDATEID " + TempUPDATEID.length);
+                            //alert("TempOLDUPCSTATUS " + TempOLDUPCSTATUS.length);
+                            //alert("TempUPDATEDATE " + TempUPDATEDATE.length);
+
+
+                            opt.innerHTML = TempITEM_DIV + "&nbsp;".repeat(3) + TempITEM_NBR + "&nbsp;".repeat(14 - (TempITEM_NBR.length)) + TempUPC + "&nbsp;".repeat(15 - (TempUPC.length)) + TempPRODUCT_DESCRIPTION + "&nbsp;".repeat(29 - (TempPRODUCT_DESCRIPTION.length)) + TempSECTION + "&nbsp;".repeat(12 - (TempSECTION.length)) + TempOLDUPCSTATUS + "&nbsp;".repeat(19 - (TempOLDUPCSTATUS.length)) + TempUPDATEID + "&nbsp;".repeat(14 - (TempUPDATEID.length)) + TempUPDATEDATE;
+                         //   opt.innerHTML = TempITEM_DIV + "&nbsp;".repeat(3) + TempITEM_NBR + "&nbsp;".repeat(3) + TempUPC + "&nbsp;".repeat(3) + TempPRODUCT_DESCRIPTION + "&nbsp;".repeat(3) + TempSECTION + "&nbsp;".repeat(3) + TempUPDATEID + "&nbsp;".repeat(3) + TempOLDUPCSTATUS + "&nbsp;".repeat(3) + TempUPDATEDATE + "&nbsp;".repeat(3);
+
+                          //  if (objSelect.length == 0) {
+
+                                objSelect.appendChild(opt);
+                         //   }
+
+                         //   alert("loop 3")
+
+                            //if (objSelect.length > 0) {
+
+                            //    var FoundIt = 0;
+
+                            //    for (var i = 0; i < objSelect.length; i++) {
+
+
+                            //        if (objSelect.options[i].value == TempUPCID) {
+                            //            FoundIt++;
+                            //        }
+
+                            //    }
+
+                            //    if (FoundIt == 0) {
+                            //        objSelect.appendChild(opt);
+                            //    }
+                          //  }
+                        }
+
+                       
+                    }
+
+                    if (response.Message == "Failure") {
+
+                        document.getElementById("ERRORMESSAGE").style.color = 'Red';
+                        document.getElementById("ERRORMESSAGE").value = "Error - displaying pending delete request list.";
+                        
+                    }
+
+                    return;
+
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //  alert("Ajax Error:" + response.Message);
+                    alert("Ajax Error:" + textStatus + " " + errorThrown);
+                },
+                failure: function (response) {
+                    alert("Ajax Failure:" + response.Message);
+                },
+
+            });
+
+            return;
+        }
+
+        
+
+        function DeleteReview() {
+
+            document.getElementById("DELETEREQUEST").checked = false;
+            document.getElementById("DELETEREVIEW").checked = true;
+            document.getElementById("DELETEREVERSAL").checked = false;
+
+            document.getElementById("UPCLISTLABEL").innerHTML = "Delete Review UPC List";
+
+            // ajax Routine
+
+
+        }
+
+        function DeleteReversal() {
+
+            document.getElementById("DELETEREQUEST").checked = false;
+            document.getElementById("DELETEREVIEW").checked = false;
+            document.getElementById("DELETEREVERSAL").checked = true;
+
+            document.getElementById("UPCLISTLABEL").innerHTML = "Delete Reqversal UPC List";
+
+            // ajax Routine
+
+
+        }
+
+        function EnterDownPaste(e) {
+
+            if (e.keyCode === 13) {
+
+
+                AddPastedUPCs()
+
+            }
+
+            if (e.keyCode === 9) {
+
+
+                AddPastedUPCs()
+
+            }
+        }
+
+        function AddPastedUPCs() {  // add to selection list not current list
+
+
+
+
+
+           // document.getElementById("SINGLEUPC").value = "";
+           
+           // document.getElementById("UPCSEARCH").value = "";
+
+            var GoodUPCs = 0;
+            var BadUPCs = 0;
+
+          
+
+          //  var objSelect = document.getElementById("CURRENTUPCLIST");
+           
+
+            var TempUPC = document.getElementById("PASTEDUPCLIST").value;
+
+            TempUPC = TempUPC.replace(/[ ,]+/g, ",");
+            TempUPC = TempUPC.replace(new RegExp("[\r\n]", "gm"), ",");
+
+
+            var TempArray = JSON.parse("[" + TempUPC + "]");
+
+
+
+
+            for (var i = 0; i < TempArray.length; i++) {
+
+
+
+
+                var myData = { UPC: TempArray[i] };
+                var token = $('input[name="__RequestVerificationToken"]', $('#MainForm')).val();
+                var dataWithAntiforgeryToken = $.extend(myData, { '__RequestVerificationToken': token });
+
+                $.ajax({
+                    url: "DeleteUPC/DUPC/ValidateUPC",
+                    type: "GET",
+                    data: dataWithAntiforgeryToken,
+                    dataType: "json",
+                    async: false,
+                    success: function (response) {
+
+                        if (response.Success == true) {
+
+                            GoodUPCs++;
+
+                            DisplayUPCinResults(TempArray[i]);
+                        }
+                        else {
+
+                            BadUPCs++;
+
+                        }
+
+                    },
+
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        //  alert("Ajax Error:" + response.Message);
+                        alert("Ajax Error:" + textStatus + " " + errorThrown);
+                    },
+                    failure: function (response) {
+                        alert("Ajax Failure:" + response.Message);
+                    },
+
+                });
+
+
+
+
+            }
+
+            document.getElementById("ERRORMESSAGE").style.color = 'Green';
+            document.getElementById("ERRORMESSAGE").value = "Entered or Pasted UPC list contained " + GoodUPCs + " valid UPCs and " + BadUPCs + " invalid UPCs";
+            document.getElementById("PASTEDUPCLIST").value = "";
+        }
+
+        function DisplayUPCinResults(UPC) {
+
+           
+
+         var myData = { UPC: UPC };
+         var token = $('input[name="__RequestVerificationToken"]', $('#MainForm')).val();
+         var dataWithAntiforgeryToken = $.extend(myData, { '__RequestVerificationToken': token });
+
+          $.ajax({
+            url: "DeleteUPC/DUPC/DisplayUPCinResults",
+            type: "GET",
+            data: dataWithAntiforgeryToken,
+            dataType: "json",
+            async: false,
+            success: function (response) {
+
+                var objSelect = document.getElementById("SELECTIONUPCLIST");
+                //  while (objSelect.options.length > 0) objSelect.remove(0);
+
+                var Results = response.AppDataSet;
+
+
+                var TempITEM_DIV = "";
+                var TempITEM_NBR = "";
+                var TempUPC = "";
+                var TempUPCID = "";
+                var TempPRODUCT_DESCRIPTION = "";
+
+                if (response.Message == "Success") {
+
+
+
+                    for (var listIndex = 0; listIndex < Results.Table.length; listIndex++) {
+
+
+
+                        var record = Results.Table[listIndex];
+
+
+
+                        TempITEM_DIV = record.ITEMDIV;
+                        TempITEM_NBR = record.ITEMNBR;
+                        TempUPC = record.UPC;
+                        TempUPCID = record.UPCID;
+                        TempPRODUCT_DESCRIPTION = record.PRODUCTDESCRIPTION;
+
+
+                        opt = document.createElement("option");
+                        opt.value = TempUPCID;
+
+
+                        opt.innerHTML = TempITEM_DIV + "&nbsp;".repeat(3) + TempITEM_NBR + "&nbsp;".repeat(13 - (TempITEM_NBR.length)) + TempUPC + "&nbsp;".repeat(14 - (TempUPC.length)) + TempPRODUCT_DESCRIPTION;
+
+                        if (objSelect.length == 0) {
+
+                            objSelect.appendChild(opt);
+                        }
+
+                        if (objSelect.length > 0) {
+
+                            var FoundIt = 0;
+
+                            for (var i = 0; i < objSelect.length; i++) {
+
+
+                                if (objSelect.options[i].value == TempUPCID) {
+                                    FoundIt++;
+                                }
+
+                            }
+
+                            if (FoundIt == 0) {
+                                objSelect.appendChild(opt);
+                            }
+                        }
+                    }
+
+                }
+
+                if (response.Message == "Failure") {
+
+                    document.getElementById("ERRORMESSAGE").style.color = 'Red';
+                    document.getElementById("ERRORMESSAGE").value = "Invalid UPC";
+                    return;
+                }
+
+                return;
+
+            },
+
+            error: function (jqXHR, textStatus, errorThrown) {
+                //  alert("Ajax Error:" + response.Message);
+                alert("Ajax Error:" + textStatus + " " + errorThrown);
+            },
+            failure: function (response) {
+                alert("Ajax Failure:" + response.Message);
+            },
+
+          });
+
+
+        }
+
+
+        function DisplayUPCIDinResults(UPCID) {
+
+
+
+            var myData = { UPCID: UPCID };
+            var token = $('input[name="__RequestVerificationToken"]', $('#MainForm')).val();
+            var dataWithAntiforgeryToken = $.extend(myData, { '__RequestVerificationToken': token });
+
+            $.ajax({
+                url: "DeleteUPC/DUPC/DisplayUPCIDinResults",
+                type: "GET",
+                data: dataWithAntiforgeryToken,
+                dataType: "json",
+                async: false,
+                success: function (response) {
+
+                    var objSelect = document.getElementById("CURRENTUPCLIST");
+                    //  while (objSelect.options.length > 0) objSelect.remove(0);
+
+                    var Results = response.AppDataSet;
+
+
+                    var TempITEM_DIV = "";
+                    var TempITEM_NBR = "";
+                    var TempUPC = "";
+                    var TempUPCID = "";
+                    var TempPRODUCT_DESCRIPTION = "";
+
+                    if (response.Message == "Success") {
+
+
+
+                        for (var listIndex = 0; listIndex < Results.Table.length; listIndex++) {
+
+
+
+                            var record = Results.Table[listIndex];
+
+
+
+                            TempITEM_DIV = record.ITEMDIV;
+                            TempITEM_NBR = record.ITEMNBR;
+                            TempUPC = record.UPC;
+                            TempUPCID = record.UPCID;
+                            TempPRODUCT_DESCRIPTION = record.PRODUCTDESCRIPTION;
+
+
+                            opt = document.createElement("option");
+                            opt.value = TempUPCID;
+
+
+                            opt.innerHTML = TempITEM_DIV + "&nbsp;".repeat(3) + TempITEM_NBR + "&nbsp;".repeat(14 - (TempITEM_NBR.length)) + TempUPC + "&nbsp;".repeat(15 - (TempUPC.length)) + TempPRODUCT_DESCRIPTION;
+
+                            if (objSelect.length == 0) {
+
+                                objSelect.appendChild(opt);
+                            }
+
+                            if (objSelect.length > 0) {
+
+                                var FoundIt = 0;
+
+                                for (var i = 0; i < objSelect.length; i++) {
+
+
+                                    if (objSelect.options[i].value == TempUPCID) {
+                                        FoundIt++;
+                                    }
+
+                                }
+
+                                if (FoundIt == 0) {
+                                    objSelect.appendChild(opt);
+                                }
+                            }
+                        }
+
+                    }
+
+                    if (response.Message == "Failure") {
+
+                        document.getElementById("ERRORMESSAGE").style.color = 'Red';
+                        document.getElementById("ERRORMESSAGE").value = "Invalid UPC";
+                        return;
+                    }
+
+                    return;
+
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //  alert("Ajax Error:" + response.Message);
+                    alert("Ajax Error:" + textStatus + " " + errorThrown);
+                },
+                failure: function (response) {
+                    alert("Ajax Failure:" + response.Message);
+                },
+
+            });
+
+
+        }
+
+
+
+        function UPCSearch() {
+
+          
+
+            document.getElementById("ERRORMESSAGE").value = "";
+
+            if (document.getElementById("UPCSEARCH").value.length < 1) {
+
+                document.getElementById("ERRORMESSAGE").value = "No product description entered.";
+                return;
+            }
+
+
+
+            var myData = { Search: document.getElementById("UPCSEARCH").value };
+            var token = $('input[name="__RequestVerificationToken"]', $('#MainForm')).val();
+            var dataWithAntiforgeryToken = $.extend(myData, { '__RequestVerificationToken': token });
+
+            $.ajax({
+                url: "DeleteUPC/DUPC/SearchUPC",
+                type: "GET",
+                data: dataWithAntiforgeryToken,
+                dataType: "json",
+                async: false,
+                success: function (response) {
+
+                    // var objSelect = document.getElementById("UPCRESULTS");
+                    var Results = response.AppDataSet;
+
+                   
+                    var objSelect = document.getElementById("SELECTIONUPCLIST");
+                    while (objSelect.options.length > 0) objSelect.remove(0);
+
+
+                    if (response.Message == "Success") {
+
+
+
+                        for (var listIndex = 0; listIndex < Results.Table.length; listIndex++) {
+
+
+
+                            var record = Results.Table[listIndex];
+
+
+
+                            TempITEM_DIV = record.ITEMDIV;
+                            TempITEM_NBR = record.ITEMNBR;
+                            TempUPC = record.UPC;
+                            TempUPCID = record.UPCID;
+                            TempPRODUCT_DESCRIPTION = record.PRODUCTDESCRIPTION;
+
+
+                            opt = document.createElement("option");
+                            opt.value = TempUPCID;  // change to UPC for UPCMoveOne function
+                           
+                            opt.innerHTML = TempITEM_DIV + "&nbsp;".repeat(3) + TempITEM_NBR + "&nbsp;".repeat(13 - (TempITEM_NBR.length)) + TempUPC + "&nbsp;".repeat(14 - (TempUPC.length)) + TempPRODUCT_DESCRIPTION;
+                            
+
+                            objSelect.appendChild(opt);
+                        }
+
+
+                        document.getElementById("ERRORMESSAGE").style.color = 'Green';
+                        document.getElementById("ERRORMESSAGE").value = "Double click result UPCs to add to current UPC list.";
+                        document.getElementById("UPCSEARCH").value = "";
+
+
+                    }
+
+                    if (response.Message == "Failure") {
+
+                        document.getElementById("ERRORMESSAGE").style.color = 'Red';
+                        document.getElementById("ERRORMESSAGE").value = "No search results.";
+                        return;
+                    }
+
+                    return;
+
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //  alert("Ajax Error:" + response.Message);
+                    alert("Ajax Error:" + textStatus + " " + errorThrown);
+                },
+                failure: function (response) {
+                    alert("Ajax Failure:" + response.Message);
+                },
+
+            });
+
+
+        }
+
+
+        function AddUPC() {
+
+          
+            var TempUPCID = document.getElementById("SELECTIONUPCLIST").value;
+
+            var selectobject = document.getElementById("CURRENTUPCLIST");
+
+                                 
+            for (var i = 0; i < selectobject.length; i++) {
+
+
+
+                if (selectobject.options[i].value == TempUPCID) {
+                    return; // already added
+                }
+            }
+
+            DisplayUPCIDinResults(TempUPCID);
+
+        }
+
+        function AddAllselections() {
+
+           
+
+            var selectobjectLOOP = document.getElementById("SELECTIONUPCLIST");
+            var selectobject = document.getElementById("CURRENTUPCLIST");
+
+
+            for (var L = 0; L < selectobjectLOOP.length; L++) {
+
+                var TempUPCID = selectobjectLOOP.options[L].value
+
+               
+              
+
+                for (var i = 0; i < selectobject.length; i++) {
+
+
+
+                    if (selectobject.options[i].value == TempUPCID) {
+                        return; // already added
+                    }
+                }
+
+                DisplayUPCIDinResults(TempUPCID);
+            }
+        }
+
+        function ClusterUPCs() {
+
+            GetClusterNbr();
+            GetClusterUPCs();
+        }
+
+        function GetClusterUPCs() {
+
+                     
+
+            document.getElementById("ERRORMESSAGE").value = "";
+
+
+            var ClusterNbr = document.getElementById("CLUSTERNBR").value;
+
+            alert("In get clusterupcs with nbr " + ClusterNbr)
+          
+            var myData = { CLUSTER_NBR: ClusterNbr };
+            var token = $('input[name="__RequestVerificationToken"]', $('#DeleteUPC')).val();
+            var dataWithAntiforgeryToken = $.extend(myData, { '__RequestVerificationToken': token });
+
+            alert("get here?")
+
+
+            $.ajax({
+
+                type: "GET",
+                url: "DeleteUPC/DUPC/GetClusterUPCs",
+                //data: dataWithAntiforgeryToken,
+                data: myData,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                async: true,
+                success: function (response) {
+
+                    var Results = response.AppDataSet;
+
+
+                    var objSelect = document.getElementById("SELECTIONUPCLIST");
+                    while (objSelect.options.length > 0) objSelect.remove(0);
+
+                   
+
+                    var TempITEM_DIV = "";
+                    var TempITEM_NBR = "";
+                    var TempUPC = "";
+                    var TempUPCID = "";
+                    var TempPRODUCT_DESCRIPTION = "";
+
+
+                    if (response.Message == "Success") {
+
+
+
+                        for (var listIndex = 0; listIndex < Results.Table.length; listIndex++) {
+
+
+
+                            var record = Results.Table[listIndex];
+
+
+
+                            TempITEM_DIV = record.ITEMDIV;
+                            TempITEM_NBR = record.ITEMNBR;
+                            TempUPC = record.UPC;
+                            TempUPCID = record.UPCID;
+
+                            TempPRODUCT_DESCRIPTION = record.PRODUCTDESCRIPTION;
+
+
+                            opt = document.createElement("option");
+                            opt.value = TempUPCID;
+
+
+                          //  opt.innerHTML = "(" + TempITEM_DIV + " " + TempITEM_NBR + ") " + TempUPC + " " + TempPRODUCT_DESCRIPTION;
+                            opt.innerHTML = TempITEM_DIV + "&nbsp;".repeat(3) + TempITEM_NBR + "&nbsp;".repeat(13 - (TempITEM_NBR.length)) + TempUPC + "&nbsp;".repeat(14 - (TempUPC.length)) + TempPRODUCT_DESCRIPTION;
+
+
+                            if (objSelect.length == 0) {
+
+                                objSelect.appendChild(opt);
+                            }
+
+                            if (objSelect.length > 0) {
+
+                                var FoundIt = 0;
+
+                                for (var i = 0; i < objSelect.length; i++) {
+
+
+                                    if (objSelect.options[i].value == TempUPCID) {
+                                        FoundIt++;
+                                    }
+
+                                }
+
+                                if (FoundIt == 0) {
+                                    objSelect.appendChild(opt);
+                                }
+                            }
+
+
+
+                        }
+
+                     
+                    }
+
+                    if (response.Message == "Failure") {
+
+                        document.getElementById("ERRORMESSAGE").style.color = 'Red';
+                        document.getElementById("ERRORMESSAGE").value = "No UPCs in cluster " + document.getElementById("CLUSTERNAME").value ;
+
+                    }
+
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Ajax Error:" + response.Message);
+                    alert("Ajax Error:" + textStatus + " " + errorThrown);
+                },
+                failure: function (response) {
+                    alert("Ajax Failure:" + response.Message);
+                },
+
+            });
+
+          
+            return;
+
+
+
+
+
+        }
+
+        function GetClusterNbr() {
+                                
+
+
+            var ClusterName = document.getElementById("CLUSTERNAME").value;
+
+
+            if (ClusterName.length == 0) {
+
+                document.getElementById("ERRORMESSAGE").style.color = 'Red';
+                document.getElementById("ERRORMESSAGE").value = "No Cluster Name entered. ";
+
+                return
+            }
+
+
+            var myData = { CLUSTER_NAME: ClusterName };
+            var token = $('input[name="__RequestVerificationToken"]', $('#DeleteUPC')).val();
+            var dataWithAntiforgeryToken = $.extend(myData, { '__RequestVerificationToken': token });
+
+          
+
+            $.ajax({
+
+                type: "GET",
+                url: "DeleteUPC/DUPC/GetClusterNbr",
+                //data: dataWithAntiforgeryToken,
+                data: myData,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                async: false,
+                success: function (response) {
+
+                    var Results = response.AppDataSet;
+
+
+
+
+
+                                    
+
+                    if (response.Message == "Success") {
+
+
+
+                        for (var listIndex = 0; listIndex < Results.Table.length; listIndex++) {
+
+
+
+                            var record = Results.Table[listIndex];
+
+
+                            document.getElementById("CLUSTERNBR").value = record.CLUSTERNBR;
+
+                          
+
+                            return;
+                          
+                          
+
+                        }
+
+                     
+                    }
+
+                    if (response.Message == "Failure") {
+
+                        document.getElementById("ERRORMESSAGE").style.color = 'Red';
+                        document.getElementById("ERRORMESSAGE").value = "Error trying to get cluster number.";
+
+                    }
+
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Ajax Error:" + response.Message);
+                    alert("Ajax Error:" + textStatus + " " + errorThrown);
+                },
+                failure: function (response) {
+                    alert("Ajax Failure:" + response.Message);
+                },
+
+            });
+
+                   
+
+
+
+            return 
+
+        }
+
+
+    </script>
+
+    <table border="0" style="width:800px; position:absolute; top:60px; ">
+        <tr>
+            <td>
+
+
+
+
+                <label id="Title" style="font-size:30px">UPC Delete </label>
+
+                <a href="https://docs.google.com/presentation/d/1MsyDnP4-6EVjRLuE22Fj6LXVASUIsfjJ8_h1bKgVzIQ/edit?usp=sharing" target="_blank" style="float:right">Job aid slides </a>
+
+
+            </td>
+        </tr>
+    </table>
+
+
+    <table border="1" style="width:800px; position:absolute; top:120px; border-color:Red">
+
+
+        <tr>
+            <td>
+                <table style="border:hidden">
+
+                    <tr>
+                        <td>
+                            <label>Select a view:</label>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="DELETEREQUEST" type="checkbox" class="LargeCheckbox" name="Delete Request" onclick="DeleteRequest()" />
+                            <label for="Delete Request">Delete Request</label>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="DELETEREVIEW" type="checkbox" class="LargeCheckbox" name="Delete Review" onclick="DeleteReview()" />
+                            <label for="Delete Request">Delete Review</label>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="DELETEREVERSAL" type="checkbox" class="LargeCheckbox" name="Delete Reversal" onclick="DeleteReversal()" />
+                            <label for="Delete Request">Delete Reversal</label>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+        <tr style="border-bottom:dashed; border-bottom-color:red">
+            <td>
+                <table style="border:hidden">
+
+
+                    <tr>
+
+                        <td colspan="3">
+                            <label>UPC Search and Selections:</label>
+                        </td>
+
+                    </tr>
+
+
+
+
+
+
+                    <tr>
+                        <td>
+                            <label>Enter a Single UPC/Item Number or a Pasted UPC List:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="PASTEDUPCLIST" class="textbox" style="width:200px" onkeypress="EnterDownPaste(event)">
+                        </td>
+
+                        <td>
+                            
+                            <input type="button" id="ADDPASTED" class="button" style="float:left;" value="Enter" onclick="AddPastedUPCs();" />
+                        </td>
+
+                    </tr>
+
+
+
+
+                    <tr style="border-bottom:hidden">
+                      <td>
+                        <label>UPC Search (enter partial description):</label>
+
+                      </td>
+
+                      <td>
+                        <input type="text" id="UPCSEARCH" class="textbox" maxlength="50" style="width:200px">
+                      </td>
+
+                      <td>
+                        <input type="button" id="SEARCHUPC" class="button" style="float:left;" value="Search" onclick="UPCSearch();" />
+                      </td>
+
+                    </tr>
+
+
+                    <tr style="border-top:hidden">
+                        <td>
+                            <label>Enter a UPC Cluster Name:</label>
+                        </td>
+
+                        <td>
+                            <input type="text" id="CLUSTERNAME" class="textbox" maxlength="20" style="width:200px">
+                        </td>
+
+                        <td>
+                            <input type="button" id="GETCLUSTERUPCS" class="button" style="float:left;" value="Retrieve Cluster UPCs" onclick="ClusterUPCs();" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>   
+          
+            
+              
+        <tr>
+            <td>
+                <table style="border:hidden">
+
+
+
+                    <tr>
+
+                        <td>
+                            <label>Selection Results</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label id="GRIDHEADING2" style="font-family:Courier; font-size: 12px; font-weight:800"></label>
+
+                            <select id="SELECTIONUPCLIST" class="textbox" style="font-family:Courier; float:left; width:800px;" size="10" ondblclick="AddUPC()"></select>
+
+
+                        </td>
+
+
+                    </tr>
+                  
+
+                    <tr>
+                        <td>
+                            <input type="button" id="ADDALLUPCS" class="button" style="float:left;" value="Add All UPC selections" title="" ; onclick="AddAllselections()" />
+
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+
+                <table style="border:hidden">
+
+
+                    <tr>
+
+                        <td>
+
+                            <label id="UPCLISTLABEL">UPC List</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                            <label id="GRIDHEADING" style="font-family:Courier; font-size: 12px; font-weight:800"></label>
+
+                            <select id="CURRENTUPCLIST" class="textbox" style="font-family:Courier; float:left; width:900px;" size="10" ondblclick="RemoveUPC()"></select>
+
+
+                        </td>
+
+
+
+                    </tr>
+
+
+
+
+                    <tr style="border-bottom:hidden">
+                        <td colspan="1" style="border-right:hidden">
+
+
+
+                            <input type="button" id="SAVEBUTTON" class="button" style="float:left;" value="Save UPC selections" title="" ; onclick="SaveSelections;" />
+                            <input type="button" id="REFRESH" class="button" style="margin-right: 10px; float:right; " value="Refresh Screen" title="" ; onclick="Refresh('Y');" />
+
+
+
+                        </td>
+
+
+                    </tr>
+
+                    <tr style="border-top:hidden">
+                        <td colspan="4">
+
+
+                            <label>Messages: </label>
+
+
+                            <input id="ERRORMESSAGE" type="text" class="messagebox" style="width:1000px" readonly>
+
+                            @*<input type="button" id="LOADCLIPBOARD" style="font-size: small; float: right; background-color: red " value="Load ClipBoard" ; onclick="ClipBoardAllUPCs() " />*@
+
+
+
+                        </td>
+                    </tr>
+
+                    <tr style="border-bottom:hidden">
+                        <td colspan="4">
+                            <asp:Label ID="CopyrightLabel" runat="server" Font-Names="Arial" Font-Size="X-Small" Text=" "></asp:Label>
+                        </td>
+                    </tr>
+                    <tr style="border-top:hidden">
+                        <td colspan="4">
+                            <asp:Label ID="UserRole" runat="server" Font-Names="Arial" Font-Size="X-Small" Text=" "></asp:Label>
+                            <input type="text" id="CLUSTERNBR" class="textbox" style="width:50px">
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+
+</body>
+
+</html>
